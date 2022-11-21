@@ -1,0 +1,2 @@
+By disassembling level0 main we see that it does a atoi of arg[1] and them compare the result with the number 423
+so we tried executing './level0 423' which opened a shell with level1 permission which gave us access to .pass.
