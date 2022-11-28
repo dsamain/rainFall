@@ -1,0 +1,34 @@
+This executable opens a file with fopen, then uses fgets to get the content.
+But when calling puts, the argument is not the buffer from fgets, but 0x8048703, which points to "~~"
+So we need to find a way to pass the fgets buffer to the puts function and it should print the flag
+
+Malloc is called to create the buffer, so the buffer is on the heap and not the stack, then passed to fgets with size of 64 (0x40)
+
+There are 4 malloc in total:
+m1 = malloc(8) => 0x0804a008
+m2 = malloc(8) => 0x0804a018
+m3 = malloc(8) => 0x0804a028
+m4 = malloc(8) => 0x0804a038
+
+So as on previous level, they are all next to each other and it's the expected behavior
+
+then strcpy is called with (0x0804a018 (= m2), 0xbffff8d1 (= argv[1]))
+then another strcpy is called with (0x0804a038 (= m4), 0xbffff8d9 (= argv[2]))
+
+see sample.c for our estimated code reverse enginnering
+
+
+Our goal is to put the result of fgets in puts argument
+
+Analyzing the function m, it seems to do
+printf("%s - %d", 0x08049960 (buffer where result of gets is stored), time())
+
+So a solution might be to call m after fgets has been called so that it prints the flag
+
+We can overfow to modify m3->ptr so where argv[2] will get copied, we should put
+0x080484f4 (m addr) at 0x8049928 (called in puts@plt, just like level5 with exit)
+
+see sample.c for arguments
+
+final command:
+./level7 $(python -c 'print "AAAABBBB" + "CCCCDDDD" + "EEEE" + "\x28\x99\x04\x08"') $(python -c 'print "\xf4\x84\x04\x08"')
