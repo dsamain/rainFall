@@ -1,0 +1,27 @@
+fgets is used so we cannot overflow
+allocated buffer size is 520
+printf uses *esp as first argument, esp probably points to buffer
+
+If we breakpoint before printf, we can see that on top of the stack is a pointer to the buffer *(0xbffff4f0) = AAAAAAA...
+We can exploit printf with %n so that it will output the number of printed char to the address pointer by the %n argument
+
+in the code we can see a comparison between 0x40 (64) and some stack address (dereferenced) 0x804988c, so we might use printf to output the number of bytes (which should be 64) to this address and tadaa
+Since there are some unwanted values on the stack, we first printf %d%d to get rid of them (8 bytes), then anything we put will be our values
+eg: ["%d%d %c%c"]["AA"] will printf <random>AA so it's good, we have control over printf format string AND arguments
+
+We can see on the stack right before printf, the first 4 bytes are the argument (ptr to format string), then printf will pop from stack for each argument we give, eg. %x%x%x%x will print the 16 first bytes on the stack (right after the undesired values which are 12 bytes long (4 more with argument))
+So we need to get rid of the first 12 bytes in printf (we can just do %x%x%x) + get rid of X bytes (len of string), then we can give values to printf arguments
+
+So final buffer is '"%x%x%x" + "%d"*(len(buffer) / 4) + "%c"*(len(buffer) % 4) + "%xc"(null) + <our data injection>' (note that len should include the terminating NULL)
+
+Note that we need to print the fewsest number of characters in format because if we print '%c' for len times, %c takes 2 chars for 1 more char, so it's an endless loop, whereas %d takes 2 chars but print 4 so it's ok
+Basic test: "%x%x%x %d%d%d%d%d%d%d%d%d  %c%c%c%c\0", will print the first 4 chars of our target memory
+size: 36 (including NULL)
+9"%d" skips 36 (we need more for the %c)
+
+We need to inject ["%x%x%x %d%d%d%d%d%d%d%d%d  %c%c%c%c\x00"] ["AAAA"] and it should print "<random> <format str as hex>  AAAA"
+
+But because of little endian, the NULL might not be taken into account, to be sure, put 4 NULL so that it fills up 4 bytes and we're almost sure
+python -c 'print "%x%x%x %d%d%d%d%d%d%d%d%d %c%c%c" + "\x00"*4 + "\x41"*4'
+
+python -c 'print "1234567890123456789012345678901234567890%x", ffffffff

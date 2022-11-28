@@ -1,0 +1,31 @@
+3 functions: main, n and p
+
+It seems that the goal is to reach a point where the program will execute '/bin/cat' on '/home/user/level5/.pass' (from .rodata section)
+
+After analyzing the code, it seems that it compares eax with some specific value, if it's correct, then it executes /bin/cat, so I guess we need to setup the argument for cat correctly so that it cat's the .pass
+
+It seems that p is called with a pointer to the buffer as first argument just as level3
+
+It's close to level3 except this time it wants 0x1025544 (16 930 116) as value to pass to system, so first we need to print that many characters and see if it works
+
+We can use "%04x" to print 4 bytes of the stack (so it should print itself indefinitely), so we can place %n at last with the value
+
+We just need to offset it by 2 one time (size of %n) so it works
+We can do %x%04x%n, so that %x will print "%x%0", then "0x%n" then %n will pop on stack and there we would have our address
+
+so [ "%x" + "%04x"*X + "%n" + <address to write to> ]
+
+If we want to print 16930116 chars, we need "%x" + "%04x" * (16930116-4)
+
+
+
+UPDATE delphin is smart so we can
+printf "%.16930114%x" and it will print 16930114+2 zeroes (0.<16930114>) so the right total amount
+
+Then by error and trial we try to put the correct value for %n
+
+$(python -c 'print "%.16930114" + "%x"*31 + "\x01"*2')
+This successfully prints 0101 on the last bytes, so by doing "%x"*30 + "%s" + <address> it should works
+
+0x 08 04 98 10
+$(python -c 'print "%.16930114" + "%x"*30 + "%x"*30 + "%p" + "\x10\x98\x04\x08"')

