@@ -1,0 +1,40 @@
+We can see that this exec segfault if we just execute it, but if we give an arg it prints "Nope"
+also from the .rodata it seems to call cat on level7 pass, so that's our goal (it calls system in function n)
+
+from our guesses:
+function m prints "Nope"
+function n gives the flag
+
+It seems to use pointer to function because none is called directly from main, but we can see 'call eax' right before return
+So we need to find a way to put n pointer inside eax instead of m pointer
+
+We can see that the main puts 0x8048468 (address of m) inside edx
+
+By disassembling the main it does
+
+m1 = malloc(64) => 0x804a008
+m2 = malloc(4)  => 0x804a050
+
+So the 2 mallocs are next to each other: [ 64 malloc ] [ metadata (8 bytes) ] [ 4 malloc ]
+which is normal
+
+After the 1st one the address is pushed on 7th position on stack (so 6 random values then the ptr)
+After the 2nd one the address is pushed on top of the previous address (so in the stack we have [some values] [2nd malloc (4)] [1st malloc(64)] )
+
+Then *m2 = m (address of m is copied into first 4 bytes of m2)
+So as we guessed the 2nd malloc of 4 is only here to contain the address of m
+
+Then argv[1] is loaded into eax (ebp + 0xc)
+and eax is copied to edx
+
+out guess is strcpy(m1, argv[1])
+
+So we can overflow m1 (since it's before m2) into m2, and thus change the address contained in m2
+So we need to write 64 (malloc) + 8 (m2 metadata) to reach the address, then we can just print n address
+
+n address: 0x08048454 ("\x54\x85\x04\x08")
+
+"A"*72 + "\x54\x84\x04\x08"
+
+final cmd:
+./level6 $(python -c 'print "A"*72 + "\x54\x84\x04\x08"')
