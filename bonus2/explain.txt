@@ -1,0 +1,3 @@
+Looking at rodata, we find some weird words in english, fin and nl
+
+There a 2 functions: main and greetuser

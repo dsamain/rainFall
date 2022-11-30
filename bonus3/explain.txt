@@ -1,0 +1,7 @@
+Buffer of 33 chars 0 initialized (esp + 0x18)
+
+with strcmp(buf, argv[1]), since buf is null initialized, we may want to set argv[1] to null
+so just launch bonus3 without argument (since argv is null terminated)
+it doesn't work, but delphin tried with just an empty string, and it works lmao
+
+./bonus3 ""
