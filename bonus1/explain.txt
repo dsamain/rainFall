@@ -1,0 +1,5 @@
+In .rodata we can find "sh" and "/bin/sh"
+There is only main function
+
+Executing, it seems to segfault without argument and it doesn't with at least 1 arg
+see reverse_engineer.c
