@@ -1,0 +1,101 @@
+#include <stdlib.h>
+
+int main(int argc, char **argv)
+{
+    char buf[33] = { 0 };
+
+    void *file = fopen("/home/user/end/.pass", "r");
+
+    if (file == NULL)
+        return 1;
+
+    int ret = atoi(argv[1]);
+    buf[ret] = 0; 
+
+    fread(ret + 66, 1, 65, file);
+
+    strcmp(buf, argv[1]);
+}
+
+
+main
+    push   %ebp
+    mov    %esp,%ebp
+    push   %edi
+    push   %ebx
+    and    $0xfffffff0,%esp
+    sub    $0xa0,%esp
+    mov    $0x80486f0,%edx
+    mov    $0x80486f2,%eax
+    mov    %edx,0x4(%esp)
+    mov    %eax,(%esp)
+    call   8048410 <fopen@plt>
+    mov    %eax,0x9c(%esp)
+    lea    0x18(%esp),%ebx
+    mov    $0x0,%eax
+    mov    $0x21,%edx
+    mov    %ebx,%edi
+    mov    %edx,%ecx
+    rep stos %eax,%es:(%edi)
+    cmpl   $0x0,0x9c(%esp)
+    
+    je     8048543 <main+0x4f>
+    cmpl   $0x2,0x8(%ebp)
+    je     804854d <main+0x59>
+    mov    $0xffffffff,%eax
+    jmp    8048615 <main+0x121>
+    lea    0x18(%esp),%eax
+    mov    0x9c(%esp),%edx
+    mov    %edx,0xc(%esp)
+    movl   $0x42,0x8(%esp)
+    
+    movl   $0x1,0x4(%esp)
+    
+    mov    %eax,(%esp)
+    call   80483d0 <fread@plt>
+    movb   $0x0,0x59(%esp)
+    mov    0xc(%ebp),%eax
+    add    $0x4,%eax
+    mov    (%eax),%eax
+    mov    %eax,(%esp)
+    call   8048430 <atoi@plt>
+    movb   $0x0,0x18(%esp,%eax,1)
+    lea    0x18(%esp),%eax
+    lea    0x42(%eax),%edx
+    mov    0x9c(%esp),%eax
+    mov    %eax,0xc(%esp)
+    movl   $0x41,0x8(%esp)
+    
+    movl   $0x1,0x4(%esp)
+    
+    mov    %edx,(%esp)
+    call   80483d0 <fread@plt>
+    mov    0x9c(%esp),%eax
+    mov    %eax,(%esp)
+    call   80483c0 <fclose@plt>
+    mov    0xc(%ebp),%eax
+    add    $0x4,%eax
+    mov    (%eax),%eax
+    mov    %eax,0x4(%esp)
+    lea    0x18(%esp),%eax
+    mov    %eax,(%esp)
+    call   80483b0 <strcmp@plt>
+    test   %eax,%eax
+    jne    8048601 <main+0x10d>
+    movl   $0x0,0x8(%esp)
+    
+    movl   $0x8048707,0x4(%esp)
+    
+    movl   $0x804870a,(%esp)
+    call   8048420 <execl@plt>
+    jmp    8048610 <main+0x11c>
+    lea    0x18(%esp),%eax
+    add    $0x42,%eax
+    mov    %eax,(%esp)
+    call   80483e0 <puts@plt>
+    mov    $0x0,%eax
+    lea    -0x8(%ebp),%esp
+    pop    %ebx
+    pop    %edi
+    pop    %ebp
+    ret

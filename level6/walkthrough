@@ -27,7 +27,7 @@ So as we guessed the 2nd malloc of 4 is only here to contain the address of m
 Then argv[1] is loaded into eax (ebp + 0xc)
 and eax is copied to edx
 
-out guess is strcpy(m1, argv[1])
+our guess is strcpy(m1, argv[1])
 
 So we can overflow m1 (since it's before m2) into m2, and thus change the address contained in m2
 So we need to write 64 (malloc) + 8 (m2 metadata) to reach the address, then we can just print n address

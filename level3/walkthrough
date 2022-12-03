@@ -1,9 +1,8 @@
 the binary read from stdin (with fgets so no buffer overflow possible) and than call printf with the input as the format.
-Then it set if specific adress contain the value 0x40,
+Then it opens a shell if specific adress (0x804988c) (m, global variable) contain the value 0x40,
 
 If we put some %. is the format string, it will search for the parameter in the stack.
 The %n format take an address and write at it location the number of char output by printf
 So we just have to write 0x40 char before the %n and ensure that we have the target address at the right place in the buffer.
 
 see exploit.py to generate the input
-

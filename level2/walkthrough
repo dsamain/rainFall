@@ -1,3 +1,21 @@
+again the binary use get so we try to put a shellcode on the stack and then jump on it
+problem is that the binary check the return address and if it is on the stack it will not jump on it
+but we can overpass this by first jump on the ret address and then jump on the shellcode
+
+the script 'exploit1.py' work while executed in gdb 
+(with 'env - gdb /home/user/level2/level2' and then 'unset env LINES COLUMNS')
+Sometimes the stack is different in gdb because of the main arguments and because of the env
+that why we should execute with env - and with the absolute path to the exec 
+(because argv[0] would be different between 'gdb level2' and './level2')
+
+but even with that it don't work outside of gdb for some reason :)
+
+final solution was to guess where the shellcode was with a bit of bruteforce
+see exploit2.py for the final script
+
+
+--------------------------------------------------------------
+
 shell code : \x31\xc0\x31\xdb\xb0\x06\xcd\x80\x53\x68/tty\x68/dev\x89\xe3\x31\xc9\x66\xb9\x12\x27\xb0\x05\xcd\x80\x31\xc0\x50\x68//sh\x68/bin\x89\xe3\x50\x53\x89\xe1\x99\xb0\x0b\xcd\x80
 
 buffer address: 0xbffff6ac

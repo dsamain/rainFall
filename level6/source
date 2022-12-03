@@ -1,0 +1,45 @@
+n:
+    push   %ebp
+    mov    %esp,%ebp
+    sub    $0x18,%esp
+    movl   $0x80485b0,(%esp)
+    call   8048370 <system@plt>
+    leave
+    ret
+
+m:
+    push   %ebp
+    mov    %esp,%ebp
+    sub    $0x18,%esp
+    movl   $0x80485d1,(%esp)
+    call   8048360 <puts@plt>
+    leave
+    ret
+
+main:
+    push   %ebp
+    mov    %esp,%ebp
+    and    $0xfffffff0,%esp
+    sub    $0x20,%esp
+    movl   $0x40,(%esp)
+    call   8048350 <malloc@plt>
+    mov    %eax,0x1c(%esp)
+    movl   $0x4,(%esp)
+    call   8048350 <malloc@plt>
+    mov    %eax,0x18(%esp)
+    mov    $0x8048468,%edx
+    mov    0x18(%esp),%eax
+    mov    %edx,(%eax)
+    mov    0xc(%ebp),%eax
+    add    $0x4,%eax
+    mov    (%eax),%eax
+    mov    %eax,%edx
+    mov    0x1c(%esp),%eax
+    mov    %edx,0x4(%esp)
+    mov    %eax,(%esp)
+    call   8048340 <strcpy@plt>
+    mov    0x18(%esp),%eax
+    mov    (%eax),%eax
+    call   *%eax
+    leave
+    re

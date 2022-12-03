@@ -1,0 +1,143 @@
+main:
+    push   %ebp
+    mov    %esp,%ebp
+    push   %edi
+    push   %esi
+    and    $0xfffffff0,%esp
+    sub    $0xa0,%esp
+    jmp    8048575 <main+0x11>
+    nop
+    mov    0x8049ab0,%ecx
+    mov    0x8049aac,%edx
+    mov    $0x8048810,%eax
+    mov    %ecx,0x8(%esp)
+    mov    %edx,0x4(%esp)
+    mov    %eax,(%esp)
+    call   8048410 <printf@plt>
+    mov    0x8049a80,%eax
+    mov    %eax,0x8(%esp)
+    movl   $0x80,0x4(%esp)
+    
+    lea    0x20(%esp),%eax
+    mov    %eax,(%esp)
+    call   8048440 <fgets@plt>
+    test   %eax,%eax
+    je     804872c <main+0x1c8>
+    lea    0x20(%esp),%eax
+    mov    %eax,%edx
+    mov    $0x8048819,%eax
+    mov    $0x5,%ecx
+    mov    %edx,%esi
+    mov    %eax,%edi
+    repz cmpsb %es:(%edi),%ds:(%esi)
+    seta   %dl
+    setb   %al
+    mov    %edx,%ecx
+    sub    %al,%cl
+    mov    %ecx,%eax
+    movsbl %al,%eax
+    test   %eax,%eax
+    jne    8048642 <main+0xde>
+    movl   $0x4,(%esp)
+    call   8048470 <malloc@plt>
+    mov    %eax,0x8049aac
+    mov    0x8049aac,%eax
+    movl   $0x0,(%eax)
+    lea    0x20(%esp),%eax
+    add    $0x5,%eax
+    movl   $0xffffffff,0x1c(%esp)
+    
+    mov    %eax,%edx
+    mov    $0x0,%eax
+    mov    0x1c(%esp),%ecx
+    mov    %edx,%edi
+    repnz scas %es:(%edi),%al
+    mov    %ecx,%eax
+    not    %eax
+    sub    $0x1,%eax
+    cmp    $0x1e,%eax
+    ja     8048642 <main+0xde>
+    lea    0x20(%esp),%eax
+    lea    0x5(%eax),%edx
+    mov    0x8049aac,%eax
+    mov    %edx,0x4(%esp)
+    mov    %eax,(%esp)
+    call   8048460 <strcpy@plt>
+    lea    0x20(%esp),%eax
+    mov    %eax,%edx
+    mov    $0x804881f,%eax
+    mov    $0x5,%ecx
+    mov    %edx,%esi
+    mov    %eax,%edi
+    repz cmpsb %es:(%edi),%ds:(%esi)
+    seta   %dl
+    setb   %al
+    mov    %edx,%ecx
+    sub    %al,%cl
+    mov    %ecx,%eax
+    movsbl %al,%eax
+    test   %eax,%eax
+    jne    8048678 <main+0x114>
+    mov    0x8049aac,%eax
+    mov    %eax,(%esp)
+    call   8048420 <free@plt>
+    lea    0x20(%esp),%eax
+    mov    %eax,%edx
+    mov    $0x8048825,%eax
+    mov    $0x6,%ecx
+    mov    %edx,%esi
+    mov    %eax,%edi
+    repz cmpsb %es:(%edi),%ds:(%esi)
+    seta   %dl
+    setb   %al
+    mov    %edx,%ecx
+    sub    %al,%cl
+    mov    %ecx,%eax
+    movsbl %al,%eax
+    test   %eax,%eax
+    jne    80486b5 <main+0x151>
+    lea    0x20(%esp),%eax
+    add    $0x7,%eax
+    mov    %eax,(%esp)
+    call   8048430 <strdup@plt>
+    mov    %eax,0x8049ab0
+    lea    0x20(%esp),%eax
+    mov    %eax,%edx
+    mov    $0x804882d,%eax
+    mov    $0x5,%ecx
+    mov    %edx,%esi
+    mov    %eax,%edi
+    repz cmpsb %es:(%edi),%ds:(%esi)
+    seta   %dl
+    setb   %al
+    mov    %edx,%ecx
+    sub    %al,%cl
+    mov    %ecx,%eax
+    movsbl %al,%eax
+    test   %eax,%eax
+    jne    8048574 <main+0x10>
+    mov    0x8049aac,%eax
+    mov    0x20(%eax),%eax
+    test   %eax,%eax
+    je     80486ff <main+0x19b>
+    movl   $0x8048833,(%esp)
+    call   8048480 <system@plt>
+    jmp    8048574 <main+0x10>
+    mov    0x8049aa0,%eax
+    mov    %eax,%edx
+    mov    $0x804883b,%eax
+    mov    %edx,0xc(%esp)
+    movl   $0xa,0x8(%esp)
+    
+    movl   $0x1,0x4(%esp)
+    
+    mov    %eax,(%esp)
+    call   8048450 <fwrite@plt>
+    jmp    8048574 <main+0x10>
+    nop
+    mov    $0x0,%eax
+    lea    -0x8(%ebp),%esp
+    pop    %esi
+    pop    %edi
+    pop    %ebp
+    ret

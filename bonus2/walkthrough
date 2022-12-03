@@ -1,4 +1,3 @@
-
 program take 2 param 
 than it check in env if LANG=fi
 then it concat 40 first char of param 1 and 32 first char of param 2

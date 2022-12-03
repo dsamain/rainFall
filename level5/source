@@ -1,0 +1,33 @@
+o
+    %ebp
+    %esp,%ebp
+    $0x18,%esp
+    $0x80485f0,(%esp)
+    80483b0 <system@plt>
+    $0x1,(%esp)
+    8048390 <_exit@plt>
+
+n
+    %ebp
+    %esp,%ebp
+    $0x218,%esp
+    0x8049848,%eax
+    %eax,0x8(%esp)
+    $0x200,0x4(%esp)
+    80484db:	00
+    -0x208(%ebp),%eax
+    %eax,(%esp)
+    80483a0 <fgets@plt>
+    -0x208(%ebp),%eax
+    %eax,(%esp)
+    8048380 <printf@plt>
+    $0x1,(%esp)
+    80483d0 <exit@plt>
+
+main
+    push   %ebp
+    mov    %esp,%ebp
+    and    $0xfffffff0,%esp
+    call   80484c2 <n>
+    leave
+    ret

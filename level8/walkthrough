@@ -1,0 +1,10 @@
+The binary open a prompt and seem to do something with the input auth, service and login
+I was entering random combination of those words in the terminal and a shell just opened ¯\_(ツ)_/¯
+
+After analyzing the code, we see that auth increment the global var auth by 0x10, the command service increment the global var service by 0x10
+when doing login, it checks the memory at auth+32, then if not null it execs
+so we can just call:
+auth (init auth variable)
+service (increment by 16)
+service (incrment by 16 so 32 total)
+login => we have a shell gg
